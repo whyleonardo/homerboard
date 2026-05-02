@@ -1,0 +1,320 @@
+# Instincts generated from https://github.com/whyleonardo/homerboard
+# Generated: 2026-05-02T22:45:50.879Z
+# Version: 2.0
+# NOTE: This file supplements (does not replace) any existing curated instincts.
+# High-confidence manually curated instincts should be preserved alongside these.
+
+---
+id: homerboard-commit-conventional
+trigger: "when writing a commit message"
+confidence: 0.85
+domain: git
+source: repo-analysis
+source_repo: https://github.com/whyleonardo/homerboard
+---
+
+# Homerboard Commit Conventional
+
+## Action
+
+Use conventional commit format with prefixes: chore, feat, refactor
+
+## Evidence
+
+- 4 commits analyzed
+- Detected conventional commit pattern
+- Examples: chore: Add agent docs and update import paths, feat(persistence): Add dashboard store and tests
+
+---
+id: homerboard-commit-length
+trigger: "when writing a commit message"
+confidence: 0.6
+domain: git
+source: repo-analysis
+source_repo: https://github.com/whyleonardo/homerboard
+---
+
+# Homerboard Commit Length
+
+## Action
+
+Keep commit messages concise (~47 characters)
+
+## Evidence
+
+- Average commit message length: 47 chars
+- Based on 4 commits
+
+---
+id: homerboard-naming-files
+trigger: "when creating a new file"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/whyleonardo/homerboard
+---
+
+# Homerboard Naming Files
+
+## Action
+
+Use camelCase naming convention
+
+## Evidence
+
+- Analyzed file naming patterns in repository
+- Dominant pattern: camelCase
+
+---
+id: homerboard-import-alias
+trigger: "when importing modules"
+confidence: 0.85
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/whyleonardo/homerboard
+---
+
+# Homerboard Import Alias
+
+## Action
+
+Use path aliases (@/, ~/) instead of relative imports
+
+## Evidence
+
+- Import analysis shows alias pattern
+- Example: import { x } from '@/lib/x'
+
+---
+id: homerboard-export-style
+trigger: "when exporting from a module"
+confidence: 0.7
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/whyleonardo/homerboard
+---
+
+# Homerboard Export Style
+
+## Action
+
+Prefer named exports
+
+## Evidence
+
+- Export pattern analysis
+- Dominant style: named
+
+---
+id: homerboard-arch-type-based
+trigger: "when adding new code"
+confidence: 0.8
+domain: architecture
+source: repo-analysis
+source_repo: https://github.com/whyleonardo/homerboard
+---
+
+# Homerboard Arch Type Based
+
+## Action
+
+Place code in the appropriate type folder (components/, services/, utils/, etc.)
+
+## Evidence
+
+- Type-based module organization detected
+- Folders: components, features
+
+---
+id: homerboard-test-colocate
+trigger: "when writing tests"
+confidence: 0.85
+domain: testing
+source: repo-analysis
+source_repo: https://github.com/whyleonardo/homerboard
+---
+
+# Homerboard Test Colocate
+
+## Action
+
+Place test file next to the source file (e.g., Button.test.tsx next to Button.tsx)
+
+## Evidence
+
+- Colocated test pattern detected
+- Tests live alongside source files
+
+---
+id: homerboard-instinct-file-naming
+trigger: "When creating a new file"
+confidence: 0.9
+domain: code-style
+source: repo-analysis
+source_repo: whyleonardo/homerboard
+---
+
+# Homerboard Instinct File Naming
+
+## Action
+
+Name the file using camelCase
+
+## Evidence
+
+- Pattern in namingConventions.files: camelCase
+
+---
+id: homerboard-instinct-function-naming
+trigger: "When defining a function"
+confidence: 0.9
+domain: code-style
+source: repo-analysis
+source_repo: whyleonardo/homerboard
+---
+
+# Homerboard Instinct Function Naming
+
+## Action
+
+Name the function using camelCase
+
+## Evidence
+
+- Pattern in namingConventions.functions: camelCase
+
+---
+id: homerboard-instinct-class-naming
+trigger: "When defining a class"
+confidence: 0.9
+domain: code-style
+source: repo-analysis
+source_repo: whyleonardo/homerboard
+---
+
+# Homerboard Instinct Class Naming
+
+## Action
+
+Name the class using PascalCase
+
+## Evidence
+
+- Pattern in namingConventions.classes: PascalCase
+
+---
+id: homerboard-instinct-constant-naming
+trigger: "When declaring a constant"
+confidence: 0.9
+domain: code-style
+source: repo-analysis
+source_repo: whyleonardo/homerboard
+---
+
+# Homerboard Instinct Constant Naming
+
+## Action
+
+Name the constant using SCREAMING_SNAKE_CASE
+
+## Evidence
+
+- Pattern in namingConventions.constants: SCREAMING_SNAKE_CASE
+
+---
+id: homerboard-instinct-import-alias
+trigger: "When importing modules"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: whyleonardo/homerboard
+---
+
+# Homerboard Instinct Import Alias
+
+## Action
+
+Use alias import style
+
+## Evidence
+
+- Pattern in importStyle: alias
+
+---
+id: homerboard-instinct-export-named
+trigger: "When exporting modules or functions"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: whyleonardo/homerboard
+---
+
+# Homerboard Instinct Export Named
+
+## Action
+
+Use named exports
+
+## Evidence
+
+- Pattern in exportStyle: named
+
+---
+id: homerboard-instinct-test-colocation
+trigger: "When adding tests for a module"
+confidence: 0.8
+domain: testing
+source: repo-analysis
+source_repo: whyleonardo/homerboard
+---
+
+# Homerboard Instinct Test Colocation
+
+## Action
+
+Colocate test files with the module in the same folder
+
+## Evidence
+
+- Pattern in architecture.folderStructure.testLocation: colocated
+
+---
+id: homerboard-instinct-commit-conventional
+trigger: "When writing a commit message"
+confidence: 0.9
+domain: git
+source: repo-analysis
+source_repo: whyleonardo/homerboard
+---
+
+# Homerboard Instinct Commit Conventional
+
+## Action
+
+Use a conventional commit prefix (chore, feat, refactor) followed by a colon and a short description
+
+## Evidence
+
+- Seen in commit: chore: Add agent docs and update import paths
+- Seen in commit: feat(persistence): Add dashboard store and tests
+- Seen in commit: Refactor(ui): normalize formatting and rename App
+
+---
+id: homerboard-instinct-commit-length
+trigger: "When writing a commit message"
+confidence: 0.7
+domain: git
+source: repo-analysis
+source_repo: whyleonardo/homerboard
+---
+
+# Homerboard Instinct Commit Length
+
+## Action
+
+Keep the commit message around 47 characters on average
+
+## Evidence
+
+- Pattern in commits.averageLength: 47
+
