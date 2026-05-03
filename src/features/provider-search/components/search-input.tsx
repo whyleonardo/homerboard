@@ -53,7 +53,11 @@ export const ProviderSearchInput = () => {
         </SelectPopup>
       </Select>
       <GroupSeparator />
-      <Input placeholder={`Search ${selectedProtocol.label}...`} size="lg" />
+      <Input
+        aria-label="Search query"
+        placeholder={`Search ${selectedProtocol.label}...`}
+        size="lg"
+      />
     </Group>
   );
 };
