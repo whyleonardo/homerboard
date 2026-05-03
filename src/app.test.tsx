@@ -1,0 +1,69 @@
+// @vitest-environment jsdom
+
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { afterEach, describe, expect, it } from "vitest";
+import { App } from "./app";
+
+const homeboardName = /homeboard/i;
+const focusModeText = /focus mode/i;
+const weatherName = /weather/i;
+const providerSearchName = /provider search/i;
+const jumpInName = /jump in/i;
+const dailyRoutinesName = /daily routines/i;
+const flowBoardName = /flow board/i;
+const utilityDockName = /utility dock/i;
+const sanFranciscoText = /san francisco/i;
+const clearSkyText = /clear sky/i;
+const figmaName = /figma/i;
+const reviewLogsText = /review overnight logs & metrics/i;
+const finalizeRoadmapText = /finalize q3 roadmap & okrs/i;
+const sprintMarkerText = /sprint #42/i;
+const progressText = /75%/;
+const searchQueryName = /search query/i;
+
+afterEach(() => {
+  cleanup();
+});
+
+describe("Homeboard dashboard", () => {
+  it("renders the primary dashboard regions", () => {
+    render(<App />);
+
+    expect(screen.getByRole("heading", { name: homeboardName })).toBeTruthy();
+    expect(screen.getByText(focusModeText)).toBeTruthy();
+    expect(screen.getByRole("region", { name: weatherName })).toBeTruthy();
+    expect(
+      screen.getByRole("search", { name: providerSearchName })
+    ).toBeTruthy();
+    expect(screen.getByRole("region", { name: jumpInName })).toBeTruthy();
+    expect(
+      screen.getByRole("region", { name: dailyRoutinesName })
+    ).toBeTruthy();
+    expect(screen.getByRole("region", { name: flowBoardName })).toBeTruthy();
+    expect(
+      screen.getByRole("navigation", { name: utilityDockName })
+    ).toBeTruthy();
+  });
+
+  it("shows seeded dashboard data in the shell", () => {
+    render(<App />);
+
+    expect(screen.getByText(sanFranciscoText)).toBeTruthy();
+    expect(screen.getByText(clearSkyText)).toBeTruthy();
+    expect(screen.getByRole("link", { name: figmaName })).toBeTruthy();
+    expect(screen.getByText(reviewLogsText)).toBeTruthy();
+    expect(screen.getByText(sprintMarkerText)).toBeTruthy();
+    expect(screen.getByText(finalizeRoadmapText)).toBeTruthy();
+    expect(screen.getByText(progressText)).toBeTruthy();
+  });
+
+  it("keeps provider search usable inside the dashboard", () => {
+    render(<App />);
+
+    const searchInput = screen.getByRole("textbox", { name: searchQueryName });
+
+    fireEvent.change(searchInput, { target: { value: "daily planning" } });
+
+    expect(searchInput).toHaveProperty("value", "daily planning");
+  });
+});
