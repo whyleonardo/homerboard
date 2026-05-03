@@ -13,14 +13,31 @@ export const App = () => {
   const dashboardData = createDashboardDataStore();
   const snapshot = dashboardData.getSnapshot();
 
-  return <HomeboardDashboard snapshot={snapshot} />;
+  return (
+    <HomeboardDashboard
+      onSelectedProviderChange={dashboardData.setSelectedProvider}
+      snapshot={snapshot}
+    />
+  );
 };
 
-const HomeboardDashboard = ({ snapshot }: { snapshot: DashboardSnapshot }) => (
+const HomeboardDashboard = ({
+  onSelectedProviderChange,
+  snapshot,
+}: {
+  onSelectedProviderChange: (
+    selectedProvider: DashboardSnapshot["providerPreference"]["selectedProvider"]
+  ) => void;
+  snapshot: DashboardSnapshot;
+}) => (
   <main className="min-h-screen bg-background px-4 py-6 text-foreground sm:px-8">
     <div className="mx-auto flex min-h-[calc(100vh-3rem)] w-full max-w-6xl flex-col gap-6">
       <HeroHeader weather={snapshot.weather} />
-      <SearchAndShortcuts shortcuts={snapshot.shortcuts} />
+      <SearchAndShortcuts
+        onSelectedProviderChange={onSelectedProviderChange}
+        providerPreference={snapshot.providerPreference}
+        shortcuts={snapshot.shortcuts}
+      />
       <div className="grid flex-1 gap-4 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]">
         <DailyRoutinesCard routines={snapshot.routines} />
         <FlowBoardCard flowBoard={snapshot.flowBoard} />
@@ -70,11 +87,24 @@ const WeatherWidget = ({ weather }: { weather: Weather }) => (
   </section>
 );
 
-const SearchAndShortcuts = ({ shortcuts }: { shortcuts: Shortcut[] }) => (
+const SearchAndShortcuts = ({
+  onSelectedProviderChange,
+  providerPreference,
+  shortcuts,
+}: {
+  onSelectedProviderChange: (
+    selectedProvider: DashboardSnapshot["providerPreference"]["selectedProvider"]
+  ) => void;
+  providerPreference: DashboardSnapshot["providerPreference"];
+  shortcuts: Shortcut[];
+}) => (
   <section className="grid gap-4 rounded-3xl border bg-card p-4 shadow-xs">
     {/* biome-ignore lint/a11y/useSemanticElements: jsdom does not expose the HTML search element role in tests yet. */}
     <div aria-label="Provider search" role="search">
-      <ProviderSearchInput />
+      <ProviderSearchInput
+        onSelectedProviderChange={onSelectedProviderChange}
+        selectedProvider={providerPreference.selectedProvider}
+      />
     </div>
 
     <section aria-label="Jump In" className="space-y-3">

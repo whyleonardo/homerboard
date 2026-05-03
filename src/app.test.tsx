@@ -1,8 +1,15 @@
 // @vitest-environment jsdom
 
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import { App } from "./app";
+import { createDashboardDataStore } from "./features/dashboard-persistence/dashboard-data";
 
 const homeboardName = /homeboard/i;
 const focusModeText = /focus mode/i;
@@ -20,9 +27,12 @@ const finalizeRoadmapText = /finalize q3 roadmap & okrs/i;
 const sprintMarkerText = /sprint #42/i;
 const progressText = /75%/;
 const searchQueryName = /search query/i;
+const searchYoutubePlaceholder = /search youtube/i;
+const youtubeName = /youtube/i;
 
 afterEach(() => {
   cleanup();
+  localStorage.clear();
 });
 
 describe("Homeboard dashboard", () => {
@@ -65,5 +75,31 @@ describe("Homeboard dashboard", () => {
     fireEvent.change(searchInput, { target: { value: "daily planning" } });
 
     expect(searchInput).toHaveProperty("value", "daily planning");
+  });
+
+  it("starts provider search from the persisted provider preference", async () => {
+    const dashboardData = createDashboardDataStore();
+
+    await dashboardData.setSelectedProvider("youtube");
+
+    render(<App />);
+
+    expect(screen.getByPlaceholderText(searchYoutubePlaceholder)).toBeTruthy();
+  });
+
+  it("saves provider changes to dashboard persistence", async () => {
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("combobox"));
+    fireEvent.click(await screen.findByRole("option", { name: youtubeName }));
+
+    const reinitializedDashboardData = createDashboardDataStore();
+
+    await waitFor(() => {
+      expect(
+        reinitializedDashboardData.getSnapshot().providerPreference
+          .selectedProvider
+      ).toBe("youtube");
+    });
   });
 });
