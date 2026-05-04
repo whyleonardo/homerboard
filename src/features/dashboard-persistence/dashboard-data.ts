@@ -276,6 +276,13 @@ export const createDashboardDataStore = ({
   seedCollection(weatherSettings, [defaultWeatherSettings]);
 
   return {
+    addShortcut: (shortcut: DashboardShortcut) => {
+      if (shortcuts.get(shortcut.id)) {
+        throw new Error(`Expected shortcut '${shortcut.id}' to be new.`);
+      }
+
+      shortcuts.insert(shortcut);
+    },
     getSnapshot: (): DashboardSnapshot => ({
       flowBoard: {
         cards: sortByOrder([...flowBoardCards.state.values()]),

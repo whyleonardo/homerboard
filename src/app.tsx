@@ -1,3 +1,5 @@
+import { type FormEvent, useState } from "react";
+import { Input } from "@/components/ui/input";
 import {
   createDashboardDataStore,
   type DashboardSnapshot,
@@ -9,13 +11,24 @@ type Routine = DashboardSnapshot["routines"][number];
 type Shortcut = DashboardSnapshot["shortcuts"][number];
 type Weather = DashboardSnapshot["weather"];
 
+const defaultShortcutIcon = "link";
+
+const getShortcutInitial = (label: string) =>
+  label.trim().at(0)?.toUpperCase() ?? "?";
+
 export const App = () => {
-  const dashboardData = createDashboardDataStore();
-  const snapshot = dashboardData.getSnapshot();
+  const [dashboardData] = useState(() => createDashboardDataStore());
+  const [snapshot, setSnapshot] = useState(() => dashboardData.getSnapshot());
+
+  const handleShortcutAdd = (shortcut: Shortcut) => {
+    dashboardData.addShortcut(shortcut);
+    setSnapshot(dashboardData.getSnapshot());
+  };
 
   return (
     <HomeboardDashboard
       onSelectedProviderChange={dashboardData.setSelectedProvider}
+      onShortcutAdd={handleShortcutAdd}
       snapshot={snapshot}
     />
   );
@@ -23,11 +36,13 @@ export const App = () => {
 
 const HomeboardDashboard = ({
   onSelectedProviderChange,
+  onShortcutAdd,
   snapshot,
 }: {
   onSelectedProviderChange: (
     selectedProvider: DashboardSnapshot["providerPreference"]["selectedProvider"]
   ) => void;
+  onShortcutAdd: (shortcut: Shortcut) => void;
   snapshot: DashboardSnapshot;
 }) => (
   <main className="min-h-screen bg-background px-4 py-6 text-foreground sm:px-8">
@@ -35,6 +50,7 @@ const HomeboardDashboard = ({
       <HeroHeader weather={snapshot.weather} />
       <SearchAndShortcuts
         onSelectedProviderChange={onSelectedProviderChange}
+        onShortcutAdd={onShortcutAdd}
         providerPreference={snapshot.providerPreference}
         shortcuts={snapshot.shortcuts}
       />
@@ -89,42 +105,107 @@ const WeatherWidget = ({ weather }: { weather: Weather }) => (
 
 const SearchAndShortcuts = ({
   onSelectedProviderChange,
+  onShortcutAdd,
   providerPreference,
   shortcuts,
 }: {
   onSelectedProviderChange: (
     selectedProvider: DashboardSnapshot["providerPreference"]["selectedProvider"]
   ) => void;
+  onShortcutAdd: (shortcut: Shortcut) => void;
   providerPreference: DashboardSnapshot["providerPreference"];
   shortcuts: Shortcut[];
-}) => (
-  <section className="grid gap-4 rounded-3xl border bg-card p-4 shadow-xs">
-    {/* biome-ignore lint/a11y/useSemanticElements: jsdom does not expose the HTML search element role in tests yet. */}
-    <div aria-label="Provider search" role="search">
-      <ProviderSearchInput
-        onSelectedProviderChange={onSelectedProviderChange}
-        selectedProvider={providerPreference.selectedProvider}
-      />
-    </div>
+}) => {
+  const [isAddingShortcut, setIsAddingShortcut] = useState(false);
+  const [shortcutLabel, setShortcutLabel] = useState("");
+  const [shortcutTarget, setShortcutTarget] = useState("");
 
-    <section aria-label="Jump In" className="space-y-3">
-      <h2 className="font-semibold text-lg">Jump In</h2>
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        {shortcuts.map((shortcut) => (
-          <ShortcutLink key={shortcut.id} shortcut={shortcut} />
-        ))}
+  const handleShortcutSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const trimmedLabel = shortcutLabel.trim();
+    const trimmedTarget = shortcutTarget.trim();
+
+    if (!(trimmedLabel && trimmedTarget)) {
+      return;
+    }
+
+    onShortcutAdd({
+      icon: defaultShortcutIcon,
+      id: `shortcut-${crypto.randomUUID()}`,
+      label: trimmedLabel,
+      order: shortcuts.length,
+      target: trimmedTarget,
+    });
+    setShortcutLabel("");
+    setShortcutTarget("");
+    setIsAddingShortcut(false);
+  };
+
+  return (
+    <section className="grid gap-4 rounded-3xl border bg-card p-4 shadow-xs">
+      {/* biome-ignore lint/a11y/useSemanticElements: jsdom does not expose the HTML search element role in tests yet. */}
+      <div aria-label="Provider search" role="search">
+        <ProviderSearchInput
+          onSelectedProviderChange={onSelectedProviderChange}
+          selectedProvider={providerPreference.selectedProvider}
+        />
       </div>
+
+      <section aria-label="Jump In" className="space-y-3">
+        <div className="flex items-center justify-between gap-3">
+          <h2 className="font-semibold text-lg">Jump In</h2>
+          <button
+            className="text-muted-foreground text-sm"
+            onClick={() => setIsAddingShortcut(true)}
+            type="button"
+          >
+            Add shortcut
+          </button>
+        </div>
+        {isAddingShortcut ? (
+          <form
+            className="grid gap-3 rounded-2xl border bg-background p-3 sm:grid-cols-[1fr_1fr_auto]"
+            onSubmit={handleShortcutSubmit}
+          >
+            <Input
+              aria-label="Shortcut label"
+              onChange={(event) => setShortcutLabel(event.target.value)}
+              placeholder="Shortcut label"
+              value={shortcutLabel}
+            />
+            <Input
+              aria-label="Shortcut target"
+              onChange={(event) => setShortcutTarget(event.target.value)}
+              placeholder="https://example.com"
+              value={shortcutTarget}
+            />
+            <button className="text-muted-foreground text-sm" type="submit">
+              Create shortcut
+            </button>
+          </form>
+        ) : null}
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {shortcuts.map((shortcut) => (
+            <ShortcutLink key={shortcut.id} shortcut={shortcut} />
+          ))}
+        </div>
+      </section>
     </section>
-  </section>
-);
+  );
+};
 
 const ShortcutLink = ({ shortcut }: { shortcut: Shortcut }) => (
   <a
     className="rounded-2xl border bg-background px-4 py-3 font-medium text-sm transition-colors hover:bg-accent hover:text-accent-foreground"
     href={shortcut.target}
   >
-    <span aria-hidden="true" className="mr-2 text-muted-foreground">
-      {shortcut.icon}
+    <span
+      aria-hidden="true"
+      className="mr-2 inline-flex size-5 items-center justify-center rounded-full bg-muted font-semibold text-[10px] text-muted-foreground"
+      data-icon={shortcut.icon}
+    >
+      {getShortcutInitial(shortcut.label)}
     </span>
     {shortcut.label}
   </a>

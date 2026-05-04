@@ -39,6 +39,27 @@ describe("dashboard data persistence", () => {
     ).toBe("youtube");
   });
 
+  it("persists added shortcuts across dashboard data reinitialization", async () => {
+    const storage = new MapStorage();
+    const dashboardData = createDashboardDataStore({ storage });
+
+    await dashboardData.addShortcut({
+      icon: "book-open",
+      id: "shortcut-docs",
+      label: "Docs",
+      order: 4,
+      target: "https://docs.example.com",
+    });
+
+    const reinitializedDashboardData = createDashboardDataStore({ storage });
+
+    expect(
+      reinitializedDashboardData
+        .getSnapshot()
+        .shortcuts.map((shortcut) => shortcut.label)
+    ).toEqual(["Figma", "GitHub", "Behance", "Discord", "Docs"]);
+  });
+
   it("persists routine completion without wiping other dashboard data", async () => {
     const storage = new MapStorage();
     const dashboardData = createDashboardDataStore({ storage });
